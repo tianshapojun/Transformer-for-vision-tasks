@@ -1,5 +1,5 @@
 import argparse
-from .backbone import build_backbone
+from backbone import build_backbone
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Set transformer detector', add_help=False)
