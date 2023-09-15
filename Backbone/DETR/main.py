@@ -1,5 +1,7 @@
 import argparse
 from backbone import build_backbone
+from utils import NestedTensor
+import torch 
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Set transformer detector', add_help=False)
@@ -32,12 +34,20 @@ def get_args_parser():
     # backbone输入transformer特征的维度
     parser.add_argument('--dim_feedforward', default=2048, type=int,
                         help="Intermediate size of the feedforward layers in the transformer blocks")
+    parser.add_argument('--hidden_dim', default=256, type=int,
+                        help="Size of the embeddings (dimension of the transformer)")
+    
+    parser.add_argument('--masks', action='store_true',
+                        help="Train segmentation head if the flag is provided")
     return parser
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('DETR training and evaluation script', parents=[get_args_parser()])
     args = parser.parse_args()
     backbone = build_backbone(args)
+    input = NestedTensor(torch.rand((5,3,128,64)),torch.zeros((5,128,64)))
     # out: list{0: tensor=[bs,2048,19,26] + mask=[bs,19,26]}  经过backbone resnet50 block5输出的结果
     # pos: list{0: [bs,256,19,26]}  位置编码
-    features, pos = backbone(samples)
+    features, pos = backbone(input)
+    print(features[0].tensors.shape)
+    #print(len(pos))
